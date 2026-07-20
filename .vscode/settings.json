@@ -1,0 +1,5 @@
+{
+    "git.ignoreLimitWarning": true,
+    "python.defaultInterpreterPath": "/Users/shashwat/Documents/Default Project/pdf-rag-chatbot/backend/venv/bin/python",
+    "python.analysis.extraPaths": ["/Users/shashwat/Documents/Default Project/pdf-rag-chatbot/backend"]
+}
