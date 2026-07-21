@@ -15,8 +15,6 @@ WORKDIR $HOME/app
 COPY --chown=user:user backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-download the HuggingFace embeddings model
-RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
 
 # Copy the rest of the backend files
 COPY --chown=user:user backend/ .
