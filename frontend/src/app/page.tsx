@@ -1069,9 +1069,9 @@ function EmptyState({
       >
         {hasDocs
           ? selectedLabel
-            ? <>I'll pull answers from <strong style={{ color: 'var(--fg)', fontWeight: '600' }}>{selectedLabel}</strong> and cite the source pages.</>
-            : <>I'll search across every uploaded document and cite the pages I drew from.</>
-          : <>Drop a PDF in the sidebar. I'll read it, chunk it, embed it, and answer with citations.</>}
+            ? <>I&apos;ll pull answers from <strong style={{ color: 'var(--fg)', fontWeight: '600' }}>{selectedLabel}</strong> and cite the source pages.</>
+            : <>I&apos;ll search across every uploaded document and cite the pages I drew from.</>
+          : <>Drop a PDF in the sidebar. I&apos;ll read it, chunk it, embed it, and answer with citations.</>}
       </p>
 
       {/* Feature pills — shown when no docs */}
