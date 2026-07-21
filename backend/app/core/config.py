@@ -6,8 +6,9 @@ class Settings(BaseSettings):
     API_V1_PREFIX: str = "/api/v1"
     PROJECT_NAME: str = "PDF RAG Chatbot"
     
-    OPENAI_API_KEY: str = Field(..., env="OPENAI_API_KEY")
+    OPENAI_API_KEY: str | None = Field(None, env="OPENAI_API_KEY")
     OPENAI_EMBEDDING_MODEL: str = "text-embedding-3-small"
+    HF_TOKEN: str | None = Field(None, env="HF_TOKEN")
     
     GROQ_API_KEY: str = Field(..., env="GROQ_API_KEY")
     GROQ_MODEL: str = "llama-3.1-70b-versatile"
