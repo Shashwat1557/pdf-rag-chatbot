@@ -8,15 +8,18 @@ RUN useradd -m -u 1000 user
 USER user
 ENV HOME=/home/user \
     PATH=/home/user/.local/bin:$PATH
+
 WORKDIR $HOME/app
 
-COPY --chown=user:user requirements.txt .
+# Copy the backend requirements first
+COPY --chown=user:user backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Pre-download the HuggingFace embeddings model
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
 
-COPY --chown=user:user . .
+# Copy the rest of the backend files
+COPY --chown=user:user backend/ .
 
 # Expose port 7860 (Hugging Face default)
 EXPOSE 7860
