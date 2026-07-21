@@ -1,7 +1,7 @@
 from typing import List
 import logging
 import os
-import requests
+import google.generativeai as genai
 
 logger = logging.getLogger(__name__)
 
@@ -9,45 +9,42 @@ class EmbeddingService:
     def __init__(
         self,
         api_key: str = None,
-        model: str = "sentence-transformers/all-MiniLM-L6-v2",
-        use_local: bool = False # Ignored now, forces HF API
+        model: str = "models/text-embedding-004",
+        use_local: bool = False # Ignored now, forces Gemini API
     ):
-        self.api_key = api_key or os.getenv("HF_TOKEN")
+        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
         if not self.api_key:
-            logger.warning("No HF_TOKEN found. The Hugging Face API might rate-limit or reject requests.")
-        
+            logger.warning("No GEMINI_API_KEY found. Embedding requests will fail.")
+        else:
+            genai.configure(api_key=self.api_key)
+            
         self.model = model
-        self.api_url = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{self.model}"
-        logger.info(f"Using Hugging Face Inference API for embeddings: {self.model}")
+        logger.info(f"Using Google Gemini API for embeddings: {self.model}")
     
     def embed_texts(self, texts: List[str]) -> List[List[float]]:
         if not texts:
             return []
             
-        headers = {}
-        if self.api_key:
-            headers["Authorization"] = f"Bearer {self.api_key}"
-            
         try:
-            response = requests.post(
-                self.api_url, 
-                headers=headers, 
-                json={"inputs": texts, "options": {"wait_for_model": True}}
+            # Gemini embedding API
+            result = genai.embed_content(
+                model=self.model,
+                content=texts,
+                task_type="retrieval_document"
             )
-            response.raise_for_status()
-            embeddings = response.json()
-            
-            # The API returns a list of embeddings. Ensure it's the right format
-            if isinstance(embeddings, dict) and "error" in embeddings:
-                raise Exception(embeddings["error"])
-                
-            return embeddings
+            return result['embedding']
         except Exception as e:
-            logger.error(f"Hugging Face API embedding error: {e}")
-            # If the response has text, log it for debugging
-            if hasattr(e, 'response') and e.response is not None:
-                logger.error(f"Response body: {e.response.text}")
+            logger.error(f"Google Gemini embedding error: {e}")
             raise
     
     def embed_query(self, query: str) -> List[float]:
-        return self.embed_texts([query])[0]
+        try:
+            result = genai.embed_content(
+                model=self.model,
+                content=query,
+                task_type="retrieval_query"
+            )
+            return result['embedding']
+        except Exception as e:
+            logger.error(f"Google Gemini query embedding error: {e}")
+            raise

@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str | None = Field(None, env="OPENAI_API_KEY")
     OPENAI_EMBEDDING_MODEL: str = "text-embedding-3-small"
     HF_TOKEN: str | None = Field(None, env="HF_TOKEN")
+    GEMINI_API_KEY: str | None = Field(None, env="GEMINI_API_KEY")
     
     GROQ_API_KEY: str = Field(..., env="GROQ_API_KEY")
     GROQ_MODEL: str = "llama-3.1-70b-versatile"
