@@ -15,7 +15,8 @@ tiktoken==0.7.0
 
 # Embeddings + Vector DB
 chromadb==0.5.5
-google-generativeai==0.8.3
+onnxruntime==1.17.1
+tokenizers==0.15.2
 
 # LLM
 groq==0.10.0

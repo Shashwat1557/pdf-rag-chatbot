@@ -1,7 +1,6 @@
 from typing import List
 import logging
-import os
-import google.generativeai as genai
+from chromadb.utils.embedding_functions import ONNXMiniLM_L6_V2
 
 logger = logging.getLogger(__name__)
 
@@ -9,42 +8,27 @@ class EmbeddingService:
     def __init__(
         self,
         api_key: str = None,
-        model: str = "models/text-embedding-004",
-        use_local: bool = False # Ignored now, forces Gemini API
+        model: str = "all-MiniLM-L6-v2",
+        use_local: bool = True
     ):
-        self.api_key = api_key or os.getenv("GEMINI_API_KEY")
-        if not self.api_key:
-            logger.warning("No GEMINI_API_KEY found. Embedding requests will fail.")
-        else:
-            genai.configure(api_key=self.api_key)
-            
-        self.model = model
-        logger.info(f"Using Google Gemini API for embeddings: {self.model}")
+        logger.info(f"Using ChromaDB built-in ONNX model for embeddings (runs locally, 0 APIs needed)")
+        # This automatically downloads the highly compressed ONNX model (~90MB) on first run
+        self.ef = ONNXMiniLM_L6_V2(preferred_providers=['CPUExecutionProvider'])
     
     def embed_texts(self, texts: List[str]) -> List[List[float]]:
         if not texts:
             return []
             
         try:
-            # Gemini embedding API
-            result = genai.embed_content(
-                model=self.model,
-                content=texts,
-                task_type="retrieval_document"
-            )
-            return result['embedding']
+            # ONNX embedding execution
+            return self.ef(texts)
         except Exception as e:
-            logger.error(f"Google Gemini embedding error: {e}")
+            logger.error(f"Local ONNX embedding error: {e}")
             raise
     
     def embed_query(self, query: str) -> List[float]:
         try:
-            result = genai.embed_content(
-                model=self.model,
-                content=query,
-                task_type="retrieval_query"
-            )
-            return result['embedding']
+            return self.ef([query])[0]
         except Exception as e:
-            logger.error(f"Google Gemini query embedding error: {e}")
+            logger.error(f"Local ONNX query embedding error: {e}")
             raise
